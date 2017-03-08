@@ -10,35 +10,36 @@ fail () {
 }
 
 s3get () {
-  FILE_NAME=`echo $CONFIG_PATH | awk -F/ '{print $NF}'`
-  CURRENT_FILE=`[[ ! -f /data/${FILE_NAME} ]] || (cat /data/${FILE_NAME})`
+  NAME=`echo $CONFIG_PATH | awk -F/ '{print $NF}'`
+  REMOTE_FILE=`cat ${CONFIG_PATH}`
+  CURRENT_FILE=`[[ ! -f /data/${NAME} ]] || (cat /data/${NAME})`
 
-  echo "remote file: $FILE_NAME"
+  echo "remote file: $REMOTE_FILE"
   echo "current file: $CURRENT_FILE"
 
-  if [[ "$CURRENT_FILE" = "" ]] || [[ "$CURRENT_FILE" != "$FILE_NAME" ]]; then
+  if [[ "$CURRENT_FILE" = "" ]] || [[ "$CURRENT_FILE" != "$REMOTE_FILE" ]]; then
     echo "downloading from s3"
 
     mkdir -p /s3-archives
 
-    aws s3 cp s3://${AWS_BUCKET}/${FILE_NAME}  ${DEST}/${FILE_NAME}
+    aws s3 cp s3://${AWS_BUCKET}/${REMOTE_FILE}  ${DEST}/${REMOTE_FILE}
 
-    if [[ $? != 0 ]]; then  fail "${FILE_NAME} doesn't exist in s3"; fi;
+    if [[ $? != 0 ]]; then  fail "${REMOTE_FILE} doesn't exist in s3"; fi;
 
     echo "finished downloading from s3"
 
     echo "extracting files"
 
-    mkdir -p "/s3-archives/$FILE_NAME"
-    tar -xf ${DEST}/${FILE_NAME} -C "/s3-archives/$FILE_NAME"
-    BASE_FOLDER=`ls /s3-archives/$FILE_NAME` && BASE_FOLDER="$(basename ${BASE_FOLDER})"
+    mkdir -p "/s3-archives/$NAME"
+    tar -xf ${DEST}/${REMOTE_FILE} -C "/s3-archives/$NAME"
+    BASE_FOLDER=`ls /s3-archives/$NAME` && BASE_FOLDER="$(basename ${BASE_FOLDER})"
 
-    rsync -av --delete "/s3-archives/$FILE_NAME/$BASE_FOLDER/" /data/
+    rsync -a --delete "/s3-archives/$NAME/$BASE_FOLDER/" /data/
 
     touch /data/update.lock
-    echo ${FILE_NAME} > /data/${FILE_NAME}
+    echo ${REMOTE_FILE} > /data/${NAME}
 
-    ls /s3-archives | grep -v  $FILE_NAME | awk '{print  "rm -rf /s3-archives/" $1}' | sh
+    rm -rf /s3-archives/${NAME}/*
 
     echo "done"
   fi
