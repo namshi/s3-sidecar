@@ -3,9 +3,10 @@ sidecar:
   user: root
   volumes:
    - .:/src
-#   - ~/local/namshi/edward:/data
+   - ~/local/namshi/edward:/data
   environment:
     AWS_ACCESS_KEY_ID: 'access key'
     AWS_SECRET_ACCESS_KEY: 'access secret'
     AWS_DEFAULT_REGION: 'aws region'
     AWS_BUCKET: 'bucket name'
+    CONFIG_PATH: /config/edward-test.tar.gz
