@@ -20,14 +20,13 @@ Then you can run it `docker-compose up`
 
 Once you run the container, it will start a script which will run in a loop every 3 seconds.
 
-It checks the file name `config.txt` file and checks the last file was downloaded which will be in `/data/rev.txt`.
+It will get the new file name we need to download from `CONFIG_PATH` as the last part after `/` and then it will check that the 
+content of this file `/data/{file name}` is different from the file name we are downloading.
 
-Once the file name changes in `config.txt`, it will download the new file from S3 and extract the files in `/data` directory.
+If they are different it will download the file from S3 and extract it in teh `/data/` directory.
 
-It will create a file `/data/rev.txt` contains the name of the extracted file,
+It will create a file `/data/{file name}` contains the name of the extracted file,
 
 then it creates a lock file `/data/update.lock`, this file can be used from other containers to clear their cache.
 
-and the in each loop it will check if the file name in `/data/rev.txt` is different from the file name in `config.txt`,
-
-If the file name in `/data/rev.txt` is the same as the file name in `config.txt` it won't do anything.
+If the file name in `/data/{file name}` is the same as the `file name` we are downloading, it won't do anything.

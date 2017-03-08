@@ -2,10 +2,7 @@ FROM python:2.7-alpine
 
 MAINTAINER Ayham Alzoubi "ayham.alzoubi@namshi.com"
 
-RUN pip install awscli
-
-RUN apk update
-RUN apk add rsync
+RUN pip install awscli && apk update && apk add rsync && rm -rf /var/cache/apk/*
 
 COPY . /src
 WORKDIR /src
