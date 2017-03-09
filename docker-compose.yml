@@ -1,0 +1,12 @@
+app:
+  build: .
+  user: root
+  volumes:
+   - ./s3key:/config/s3key
+   - .:/src
+  environment:
+    AWS_ACCESS_KEY_ID:
+    AWS_SECRET_ACCESS_KEY:
+    AWS_DEFAULT_REGION:
+    AWS_BUCKET:
+    CONFIG_PATH: /config/s3key
