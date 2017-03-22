@@ -1,6 +1,7 @@
 #!/bin/sh -e
 
 CONFIG_PATH=${CONFIG_PATH}
+FALL_BACK_FILE=${FALL_BACK_FILE})
 
 DEST='/tmp'
 
@@ -22,9 +23,14 @@ s3get () {
 
     mkdir -p /s3-archives
 
-    aws s3 cp s3://${AWS_BUCKET}/${REMOTE_FILE}  ${DEST}/${REMOTE_FILE}
+    result=$(aws s3 cp s3://${AWS_BUCKET}/${REMOTE_FILE}  ${DEST}/${REMOTE_FILE} 2>&1)
 
-    if [[ $? != 0 ]]; then  fail "${REMOTE_FILE} doesn't exist in s3"; fi;
+    if [[ $? != 0  && $result == *"does not exist"* ]]; then
+      echo $result
+      aws s3 cp s3://${AWS_BUCKET}/${FALL_BACK_FILE}  ${DEST}/${FALL_BACK_FILE}
+    elif [[ $? != 0 ]];then
+      fail $result
+    fi
 
     echo "finished downloading from s3"
 
