@@ -5,11 +5,6 @@ FALL_BACK_FILE=${FALL_BACK_FILE}
 
 DEST='/tmp'
 
-fail () {
-  echo "$1" > /dev/stderr
-  exit 1
-}
-
 s3get () {
   NAME=`echo $CONFIG_PATH | awk -F/ '{print $NF}'`
   REMOTE_FILE=`cat ${CONFIG_PATH}`
@@ -35,7 +30,7 @@ s3get () {
       fi
     elif [[ $result_code != 0 ]];then
       echo "fail"
-      fail $result
+      break
     fi
 
     echo "finished downloading from s3"
