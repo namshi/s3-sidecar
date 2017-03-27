@@ -30,7 +30,7 @@ s3get () {
       fi
     elif [[ $result_code != 0 ]];then
       echo "fail"
-      break
+      continue
     fi
 
     echo "finished downloading from s3"
