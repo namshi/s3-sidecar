@@ -10,3 +10,4 @@ app:
     AWS_DEFAULT_REGION:
     AWS_BUCKET:
     CONFIG_PATH: /config/s3key
+    FALL_BACK_FILE:

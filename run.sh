@@ -1,13 +1,9 @@
 #!/bin/sh -e
 
 CONFIG_PATH=${CONFIG_PATH}
+FALL_BACK_FILE=${FALL_BACK_FILE}
 
 DEST='/tmp'
-
-fail () {
-  echo "$1" > /dev/stderr
-  exit 1
-}
 
 s3get () {
   NAME=`echo $CONFIG_PATH | awk -F/ '{print $NF}'`
@@ -22,9 +18,20 @@ s3get () {
 
     mkdir -p /s3-archives
 
-    aws s3 cp s3://${AWS_BUCKET}/${REMOTE_FILE}  ${DEST}/${REMOTE_FILE}
+    result=$(aws s3 cp s3://${AWS_BUCKET}/${REMOTE_FILE}  ${DEST}/${REMOTE_FILE} 2>&1)
+    result_code=$?
 
-    if [[ $? != 0 ]]; then  fail "${REMOTE_FILE} doesn't exist in s3"; fi;
+    if [[ $1 = "initial" ]]; then
+      if [[ $result_code != 0 ]]; then
+        echo $result
+        aws s3 cp s3://${AWS_BUCKET}/${FALL_BACK_FILE} ${DEST}/${FALL_BACK_FILE}
+        echo "Downloaded fallback file"
+        REMOTE_FILE=${FALL_BACK_FILE}
+      fi
+    elif [[ $result_code != 0 ]];then
+      echo "fail"
+      continue
+    fi
 
     echo "finished downloading from s3"
 
@@ -45,7 +52,8 @@ s3get () {
   fi
 }
 
+s3get "initial"
 while true; do
-s3get
-sleep 3
+  s3get
+  sleep 3
 done
