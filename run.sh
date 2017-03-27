@@ -31,8 +31,7 @@ s3get () {
         echo $result
         aws s3 cp s3://${AWS_BUCKET}/${FALL_BACK_FILE} ${DEST}/${FALL_BACK_FILE}
       fi
-    fi
-    if [[ $result_code != 0 ]];then
+    elif [[ $result_code != 0 ]];then
       echo "fail"
       fail $result
     fi
