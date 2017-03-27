@@ -24,11 +24,16 @@ s3get () {
     mkdir -p /s3-archives
 
     result=$(aws s3 cp s3://${AWS_BUCKET}/${REMOTE_FILE}  ${DEST}/${REMOTE_FILE} 2>&1)
+    result_code=$?
 
-    if [[ $? != 0  && $result == *"does not exist"* ]]; then
-      echo $result
-      aws s3 cp s3://${AWS_BUCKET}/${FALL_BACK_FILE}  ${DEST}/${FALL_BACK_FILE}
-    elif [[ $? != 0 ]];then
+    if [[ $1 == "initial" ]]; then
+      if [[ $result_code != 0 ]]; then
+        echo $result
+        aws s3 cp s3://${AWS_BUCKET}/${FALL_BACK_FILE} ${DEST}/${FALL_BACK_FILE}
+      fi
+    fi
+    if [[ $result_code != 0 ]];then
+      echo "fail"
       fail $result
     fi
 
@@ -51,7 +56,8 @@ s3get () {
   fi
 }
 
+s3get "initial"
 while true; do
-s3get
-sleep 3
+  s3get
+  sleep 3
 done
