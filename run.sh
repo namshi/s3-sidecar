@@ -21,7 +21,7 @@ s3get () {
     result=$(aws s3 cp s3://${AWS_BUCKET}/${REMOTE_FILE}  ${DEST}/${REMOTE_FILE} 2>&1)
     result_code=$?
 
-    if [[ $1 == "initial" ]]; then
+    if [[ $1 = "initial" ]]; then
       if [[ $result_code != 0 ]]; then
         echo $result
         aws s3 cp s3://${AWS_BUCKET}/${FALL_BACK_FILE} ${DEST}/${FALL_BACK_FILE}
