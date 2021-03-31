@@ -10,8 +10,8 @@ s3get () {
   REMOTE_FILE=`cat ${CONFIG_PATH}`
   CURRENT_FILE=`[[ ! -f /data/${NAME} ]] || (cat /data/${NAME})`
 
-  echo "remote file: $REMOTE_FILE"
-  echo "current file: $CURRENT_FILE"
+  #echo "remote file: $REMOTE_FILE"
+  #echo "current file: $CURRENT_FILE"
 
   if [[ "$CURRENT_FILE" = "" ]] || [[ "$CURRENT_FILE" != "$REMOTE_FILE" ]]; then
     echo "downloading from s3"
